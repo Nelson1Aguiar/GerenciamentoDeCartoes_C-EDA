@@ -1,0 +1,16 @@
+# depslib dependency file v1.0
+1684056721 source:c:\users\user\desktop\trabalho eda\main.c
+	"lib.h"
+
+1684057525 c:\users\user\desktop\trabalho eda\lib.h
+	<stdio.h>
+	<conio.h>
+	<stdlib.h>
+	<string.h>
+
+1683936794 source:c:\users\user\desktop\trabalho eda\modulo.cpp
+	"lib.h"
+
+1684057525 source:c:\users\user\desktop\trabalho eda\modulo.c
+	"lib.h"
+
