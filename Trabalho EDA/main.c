@@ -15,7 +15,7 @@ int main()
     //Exibir menu
         system("cls");
         puts("\n\t\t\t\tEDITOR DE LISTAS\n");
-        puts("\t1  - EXIBIR LISTA DE USUARIOS\n\t2  - INSERIR USUARIO\n\t3  - EXIBIR CARTOES\n\t4  - CADASTRAR NOVO CARTAO\n\t0  - SAIR");
+        puts("\t1 - EXIBIR LISTA DE USUARIOS\n\t2 - INSERIR USUARIO\n\t3 - EXIBIR CARTOES\n\t4 - CADASTRAR NOVO CARTAO\n\t5 - BUSCAR USUARIO\n\t0 - SAIR");
         printf("\nINFORME SUA OPCAO:\n");
         scanf("%d", &op);//Escolha da Op��o
 
@@ -66,29 +66,48 @@ int main()
 
            case 4:
             {
-                int indice;
                 printf("Digite o CPF: ");
                 scanf(" %d",&dado.usuario.cpf);
 
-                indice=buscarUsuario(L,dado.usuario.cpf);
+                if(buscarUsuario(L,dado.usuario.cpf)){
+                    int pos=buscarUsuario(L,dado.usuario.cpf);
 
-                printf("Informe o numero do cartao: ");
-                scanf("%d",&dado.cartao.numero);
+                    if(L.elemento[pos].usuario.qtdCartoes>=10){
+                        printf("Maximo de cartoes atingido!");
+                        break;
+                    }
+                    else{
+                        printf("Informe o numero do cartao: ");
+                        scanf("%d",&dado.cartao.numero);
 
-                printf("Informe o dia de vencimento: ");
-                scanf("%d",&dado.cartao.dia);
+                        printf("Informe o dia de vencimento: ");
+                        scanf("%d",&dado.cartao.dia);
 
-                printf("Informe o mes de vencimento: ");
-                scanf("%d",&dado.cartao.mes);
+                        printf("Informe o mes de vencimento: ");
+                        scanf("%d",&dado.cartao.mes);
 
-                printf("Informe o ano de vencimento: ");
-                scanf("%d",&dado.cartao.ano);
+                        printf("Informe o ano de vencimento: ");
+                        scanf("%d",&dado.cartao.ano);
 
-                inserirCartao(&L,&C,dado);
-
+                        inserirCartao(&L,&C,dado);
+                        atrelarCartaoUsuario(&L,pos,dado);
+                        printf("Cartao cadastrado!");
+                    }
+                }
+                else{
+                    printf("Usuario nao cadastrado!");
+                }
 
 
     		}break;
+
+           case 5:
+            {
+                printf("Digite o CPF do usuario que deseja: ");
+                scanf(" %d",&dado.usuario.cpf);
+                int pos=buscarUsuario(L,dado.usuario.cpf);
+                exibirUsuarioUnico(L,pos);
+            }break;
 
     		case 0:
             {
