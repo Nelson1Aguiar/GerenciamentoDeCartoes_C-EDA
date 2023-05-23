@@ -40,7 +40,7 @@ void exibirUsuario(TlistaUsuario L){
             }
         }
     else
-        puts("nao ha elementos");
+        puts("NAO EXISTE NENHUM USUÁRIO NO MOMENTO");
 }
 
 void exibirCartoes(TlistaCardCompra C){
