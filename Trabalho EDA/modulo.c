@@ -33,7 +33,7 @@ void exibirUsuario(TlistaUsuario L){
                 printf("Numero cartao ou cartoes: ");
                 for(int j=0;j<10;j++){
                     if(L.elemento[i].usuario.numeroCartao[j]!=0){
-                        printf(" %d ",L.elemento[i].usuario.numeroCartao[j]);
+                        printf(" %d || ",L.elemento[i].usuario.numeroCartao[j]);
                     }
                 }
                 printf("\n\n");
@@ -78,13 +78,11 @@ int inserirUsuario(TlistaUsuario *L,TlistaCardCompra *C,Telemento dado){
     strcpy(L->elemento[endereco].usuario.endereco,dado.usuario.endereco);
     L->elemento[endereco].usuario.numeroCartao[L->elemento[endereco].usuario.qtdCartoes]=dado.cartao.numero;
     L->n+=1;
-    int pos=buscarUsuario(*L,L->elemento[endereco].usuario.cpf);
     inserirCartao(L,C,dado);
 	return 1;
 }
 
 int inserirCartao(TlistaUsuario *L,TlistaCardCompra *C, Telemento dado){
-    int contadorDeCartao=0;
     for(int i=0;i<MAX;i++){
         if(dado.cartao.numero==C->elemento[i].cartao.numero){
             printf("Cartao ja cadastrado!");
@@ -103,10 +101,6 @@ int inserirCartao(TlistaUsuario *L,TlistaCardCompra *C, Telemento dado){
     C->elemento[endereco].cartao.mes=dado.cartao.mes;
     C->elemento[endereco].cartao.ano=dado.cartao.ano;
     C->n+=1;
-    if(dado.usuario.cpf==L->elemento[endereco].usuario.cpf){
-        L->elemento[endereco].usuario.qtdCartoes+=1;
-    }
-    L->elemento[endereco].usuario.numeroCartao[L->elemento[endereco].usuario.qtdCartoes+1]=dado.cartao.numero;
 	return C->elemento[endereco].cartao.numero;
 }
 
@@ -121,16 +115,22 @@ int buscarUsuario(TlistaUsuario L,int chave){
         }
     }
 }
-
-int buscarCartao(TlistaCardCompra C,int chave){
-
+void atrelarCartaoUsuario(TlistaUsuario *L,int pos,Telemento dado){
+    L->elemento[pos].usuario.numeroCartao[L->elemento[pos].usuario.qtdCartoes+1]=dado.cartao.numero;
+    L->elemento[pos].usuario.qtdCartoes+=1;
 }
-
-
-
-
-
-
+void exibirUsuarioUnico(TlistaUsuario L,int pos){
+    printf("indice: %d\n", pos);
+    printf("Nome: %s\n", L.elemento[pos].usuario.nome);
+    printf("Endereco: %s\n", L.elemento[pos].usuario.endereco);
+    printf("CPF: %d\n",L.elemento[pos].usuario.cpf);
+    printf("Numero cartao ou cartoes: ");
+    for(int j=0;j<10;j++){
+        if(L.elemento[pos].usuario.numeroCartao[j]!=0){
+            printf(" %d || ",L.elemento[pos].usuario.numeroCartao[j]);
+        }
+    }
+}
 
 
 
