@@ -17,12 +17,12 @@ struct usuario{
     char endereco[60];
     int numeroCartao[10];//cartoes cadastrados com limite de 10 cartoes
     char nome[60]; //nome do usuario
-    int qtdCartoes;//vetor que diz quantos cartoes o usuario tem cadastrado;
+    int qtdCartoes;//quantos cartoes o usuario tem cadastrado;
 };
 typedef struct usuario User;
 
 typedef struct{
-	Card cartao;//A chave usada será feita com o número do cartao ou com o cpf, dependendo da tabela
+	Card cartao;//A chave usada serÃ¡ feita com o nÃºmero do cartao ou com o cpf, dependendo da tabela
 	User usuario;
 } Telemento;
 
@@ -45,4 +45,4 @@ void exibirUsuario(TlistaUsuario L);
 int inserirUsuario(TlistaUsuario *L,TlistaCardCompra *C, Telemento dado);
 int inserirCartao(TlistaUsuario *L,TlistaCardCompra *C, Telemento dado);
 int buscarUsuario(TlistaUsuario L,int chave);
-int buscarCartao(TlistaCardCompra C,int chave);
+void atrelarCartaoUsuario(TlistaUsuario *L,int pos,Telemento dado);
