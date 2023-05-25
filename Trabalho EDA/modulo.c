@@ -89,13 +89,6 @@ int tamanhoUsuario(TlistaUsuario L){
 int tamanhoCartao(TlistaCardCompra C){
 	return C.n;
 }
-
-//int elemento(TlistaUsuario L, int pos, Telemento *dado){
-//	if(pos<0 || pos >MAX) return 0;
-	//*dado = L.elemento[pos];
-	//return 1;
-//}
-
 void exibirUsuario(TlistaUsuario L){
 	int i;
     if(tamanhoUsuario(L)!=0)
@@ -163,7 +156,6 @@ int inserirUsuario(TlistaUsuario *L,TlistaCardCompra *C,Telemento dado,Telemento
 int inserirCartao(TlistaUsuario *L,TlistaCardCompra *C, Telemento dado,Telemento dadoUser){
     float carg=C->n/C->m;
     if(carg>=0.60){
-        printf("Tabela cheia, redimensionando");
         redimensionarCartao(L,C,C->m * 2);
     }
     for(int i=0;i<C->m;i++){
