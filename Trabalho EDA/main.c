@@ -22,7 +22,7 @@ int main()
 
         switch(op)
         {
-        //Op��o de exibir lista
+        //Opcaoo de exibir lista
     		case 1:
             {
     			 exibirUsuario(L);
