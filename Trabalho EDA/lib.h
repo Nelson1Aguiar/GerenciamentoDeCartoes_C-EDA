@@ -3,7 +3,8 @@
 #include<stdlib.h>
 #include<string.h>
 
-#define MAX 23
+#define MAX 11
+#define fator_carga 0.8
 
 struct cartao{
     int numero;//numero unico do cartao
@@ -27,22 +28,30 @@ typedef struct{
 } Telemento;
 
 typedef struct{
-        Telemento elemento[MAX];
-        int n; // qtd de elementos inseridos na estrutura
+        Telemento* elemento;
+        float n; // qtd de elementos inseridos na estrutura
+        float m; //capacidade da tabela
 } TlistaUsuario; // tabela hash de usuarios
 
 typedef struct{
-        Telemento elemento[MAX];
-        int n; // qtd de elementos inseridos na estrutura
+        Telemento* elemento;
+        float n; // qtd de elementos inseridos na estrutura
+        float m; //capacidade da tabela
 } TlistaCardCompra; //Tabela hash de cartao e compras
 
 
-int hashing(int chave);
-void criar(TlistaUsuario *L, TlistaCardCompra *C);
+int hashing(int chave,int tam);
+TlistaUsuario criarUsuario();
+TlistaCardCompra criarCartao();
+void redimensionarUsuario(TlistaCardCompra *C,TlistaUsuario *L,int tam_novo);
+void redimensionarCartao(TlistaUsuario *L,TlistaCardCompra *C,int tam_novo);
 int tamanho(TlistaUsuario L);
 int elemento(TlistaUsuario L, int pos, Telemento *dado);
 void exibirUsuario(TlistaUsuario L);
-int inserirUsuario(TlistaUsuario *L,TlistaCardCompra *C, Telemento dado);
-int inserirCartao(TlistaUsuario *L,TlistaCardCompra *C, Telemento dado);
+int inserirUsuario(TlistaUsuario *L,TlistaCardCompra *C,Telemento dado,Telemento dadoCard);
+int inserirCartao(TlistaUsuario *L,TlistaCardCompra *C, Telemento dado,Telemento dadoUser);
 int buscarUsuario(TlistaUsuario L,int chave);
 void atrelarCartaoUsuario(TlistaUsuario *L,int pos,Telemento dado);
+void exibirCartoes(TlistaCardCompra C);
+void exibirUsuarioUnico(TlistaUsuario L,int pos);
+int buscarCartao(TlistaCardCompra C,int chave);
