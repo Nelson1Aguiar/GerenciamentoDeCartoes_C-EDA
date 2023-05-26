@@ -79,3 +79,4 @@ No* inserir(No* no, Produto P);
 void imprimir(No* no);
 void inserirCompras(TlistaCardCompra *C,Telemento dado);
 
+
