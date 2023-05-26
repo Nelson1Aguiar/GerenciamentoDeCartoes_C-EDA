@@ -94,8 +94,9 @@ int main()
                         printf("Informe o ano de vencimento: ");
                         scanf("%d",&dadoCard.cartao.ano);
 
-                        inserirCartao(&L,&C,dadoCard,dadoUser);
-                        printf("Cartao cadastrado!");
+                        if(inserirCartao(&L,&C,dadoCard,dadoUser)){
+                            printf("Cartao cadastrado!");
+                        }
                     }
                 }
                 else{
@@ -118,6 +119,10 @@ int main()
                 printf("Digite o numero do cartao da compra: ");
                 scanf(" %lli",&dadoCard.cartao.numero);
                 int endereco=buscarCartao(C,dadoCard.cartao.numero);
+                if(C.elemento[endereco].cartao.numero==0){
+                    printf("Cartao nao cadastrado!");
+                    break;
+                }
 
                 printf("Informe o nome do produto: ");
                 scanf(" %[^\n]", P.nomeProduto);
