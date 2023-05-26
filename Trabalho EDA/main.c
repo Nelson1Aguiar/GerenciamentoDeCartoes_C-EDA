@@ -8,6 +8,8 @@ int main()
     TlistaUsuario L;
     TlistaCardCompra C;
 	Telemento dadoUser,dadoCard;
+	Produto P;
+	No* raiz=NULL;
 
     L=criarUsuario();
     C=criarCartao();
@@ -16,13 +18,14 @@ int main()
     //Exibir menu
         system("cls");
         puts("\n\t\t\t\tEDITOR DE LISTAS\n");
-        puts("\t1 - EXIBIR LISTA DE USUARIOS\n\t2 - INSERIR USUARIO\n\t3 - EXIBIR CARTOES\n\t4 - CADASTRAR NOVO CARTAO\n\t5 - BUSCAR USUARIO\n\t0 - SAIR");
+        puts("\t1 - EXIBIR LISTA DE USUARIOS\n\t2 - INSERIR USUARIO\n\t3 - EXIBIR CARTOES E COMPRAS\n\t4 - CADASTRAR NOVO CARTAO\n\t5 - BUSCAR USUARIO");
+        puts("\t6 - CADASTRAR COMPRA\n\t7 - BUSCAR UM CARTAO\n\t0 - SAIR");
         printf("\nINFORME SUA OPCAO:\n");
         scanf("%d", &op);//Escolha da Op��o
 
         switch(op)
         {
-        //Opcaoo de exibir lista
+        //Op��o de exibir lista
     		case 1:
             {
     			 exibirUsuario(L);
@@ -34,13 +37,13 @@ int main()
                 scanf(" %[^\n]", dadoUser.usuario.nome);
 
                 printf("Informe seu CPF: ");
-                scanf("%d", &dadoUser.usuario.cpf);
+                scanf(" %lli", &dadoUser.usuario.cpf);
 
                 printf("Informe seu endereco: ");
                 scanf(" %[^\n]", dadoUser.usuario.endereco);
 
                 printf("Agora precisamos cadastrar um cartao, informe o numero: ");
-                scanf("%d",&dadoCard.cartao.numero);
+                scanf("%lli",&dadoCard.cartao.numero);
 
                 printf("Informe o dia de vencimento: ");
                 scanf("%d",&dadoCard.cartao.dia);
@@ -68,10 +71,11 @@ int main()
            case 4:
             {
                 printf("Digite o CPF: ");
-                scanf(" %d",&dadoUser.usuario.cpf);
+                scanf(" %lli",&dadoUser.usuario.cpf);
 
                 if(buscarUsuario(L,dadoUser.usuario.cpf)){
                     int pos=buscarUsuario(L,dadoUser.usuario.cpf);
+                    dadoUser=L.elemento[pos];
 
                     if(L.elemento[pos].usuario.qtdCartoes>=10){
                         printf("Maximo de cartoes atingido!");
@@ -79,7 +83,7 @@ int main()
                     }
                     else{
                         printf("Informe o numero do cartao: ");
-                        scanf("%d",&dadoCard.cartao.numero);
+                        scanf("%lli",&dadoCard.cartao.numero);
 
                         printf("Informe o dia de vencimento: ");
                         scanf("%d",&dadoCard.cartao.dia);
@@ -104,9 +108,37 @@ int main()
            case 5:
             {
                 printf("Digite o CPF do usuario que deseja: ");
-                scanf(" %d",&dadoUser.usuario.cpf);
+                scanf(" %lli",&dadoUser.usuario.cpf);
                 int pos=buscarUsuario(L,dadoUser.usuario.cpf);
                 exibirUsuarioUnico(L,pos);
+            }break;
+
+           case 6:
+            {
+                printf("Digite o numero do cartao da compra: ");
+                scanf(" %lli",&dadoCard.cartao.numero);
+                int endereco=buscarCartao(C,dadoCard.cartao.numero);
+
+                printf("Informe o nome do produto: ");
+                scanf(" %[^\n]", P.nomeProduto);
+                printf("Informe o preco do produto: ");
+                scanf("%f", &P.preco);
+                printf("Informe a quantidade comprada: ");
+                scanf("%d", &P.quantidade);
+                printf("Informe o codigo da compra: ");
+                scanf("%d", &P.codigo);
+
+                C.elemento[endereco].cartao.produto=inserir(C.elemento[endereco].cartao.produto, P);
+
+            }break;
+
+           case 7:
+            {
+                printf("Digite o numero do cartao: ");
+                scanf(" %lli",&dadoCard.cartao.numero);
+                int endereco=buscarCartao(C,dadoCard.cartao.numero);
+                ExibirCartaoUnico(C,endereco);
+
             }break;
 
     		case 0:
