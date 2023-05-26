@@ -9,7 +9,6 @@ int main()
     TlistaCardCompra C;
 	Telemento dadoUser,dadoCard;
 	Produto P;
-	No* raiz=NULL;
 
     L=criarUsuario();
     C=criarCartao();
@@ -58,6 +57,9 @@ int main()
                     printf("Inserido!");
                     printf(" Ola %s",dadoUser.usuario.nome);
                 }
+                else{
+                    printf("User ja cadastrado!");
+                }
 
 
             }break;
@@ -96,6 +98,9 @@ int main()
 
                         if(inserirCartao(&L,&C,dadoCard,dadoUser)){
                             printf("Cartao cadastrado!");
+                        }
+                        else{
+                            printf("Cartao ja cadastrado!");
                         }
                     }
                 }
