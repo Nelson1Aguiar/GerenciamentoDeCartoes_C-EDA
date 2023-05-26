@@ -1,20 +1,123 @@
 #include "lib.h"
 
-int main(){
-    No* raiz = NULL; // Raiz da árvore AVL
 
+//Programa principal
+int main()
+{
     int op;
-    Produto P;
+    TlistaUsuario L;
+    TlistaCardCompra C;
+	Telemento dadoUser,dadoCard;
+	Produto P;
+	No* raiz=NULL;
 
-    do {
+    L=criarUsuario();
+    C=criarCartao();
+
+    do{
+    //Exibir menu
         system("cls");
-        puts("\n\t\t\t\tARVORE AVL \n");
-        puts("\t1  - INSERIR ELEMENTO\n \t2  - IMPRIMIR ARVORE\n\t3  - BUSCAR ELEMENTO\n\t0 - SAIR\n\n");
+        puts("\n\t\t\t\tEDITOR DE LISTAS\n");
+        puts("\t1 - EXIBIR LISTA DE USUARIOS\n\t2 - INSERIR USUARIO\n\t3 - EXIBIR CARTOES E COMPRAS\n\t4 - CADASTRAR NOVO CARTAO\n\t5 - BUSCAR USUARIO");
+        puts("\t6 - CADASTRAR COMPRA\n\t7 - BUSCAR UM CARTAO\n\t0 - SAIR");
         printf("\nINFORME SUA OPCAO:\n");
-        scanf("%d", &op); // Escolha da Opção
+        scanf("%d", &op);//Escolha da Opï¿½ï¿½o
 
-        switch (op) {
-            case 1: {
+        switch(op)
+        {
+        //Opï¿½ï¿½o de exibir lista
+    		case 1:
+            {
+    			 exibirUsuario(L);
+    		}break;
+    	//inserir
+    		case 2:
+            {
+                printf("Informe seu nome completo: ");
+                scanf(" %[^\n]", dadoUser.usuario.nome);
+
+                printf("Informe seu CPF: ");
+                scanf(" %ld", &dadoUser.usuario.cpf);
+
+                printf("Informe seu endereco: ");
+                scanf(" %[^\n]", dadoUser.usuario.endereco);
+
+                printf("Agora precisamos cadastrar um cartao, informe o numero: ");
+                scanf("%ld",&dadoCard.cartao.numero);
+
+                printf("Informe o dia de vencimento: ");
+                scanf("%d",&dadoCard.cartao.dia);
+
+                printf("Informe o mes de vencimento: ");
+                scanf("%d",&dadoCard.cartao.mes);
+
+                printf("Informe o ano de vencimento: ");
+                scanf("%d",&dadoCard.cartao.ano);
+
+                if(inserirUsuario(&L,&C, dadoUser,dadoCard)){
+                    printf("Inserido!");
+                    printf(" Ola %s",dadoUser.usuario.nome);
+                }
+
+
+            }break;
+
+            case 3:
+            {
+                exibirCartoes(C);
+
+            }break;
+
+           case 4:
+            {
+                printf("Digite o CPF: ");
+                scanf(" %ld",&dadoUser.usuario.cpf);
+
+                if(buscarUsuario(L,dadoUser.usuario.cpf)){
+                    int pos=buscarUsuario(L,dadoUser.usuario.cpf);
+
+                    if(L.elemento[pos].usuario.qtdCartoes>=10){
+                        printf("Maximo de cartoes atingido!");
+                        break;
+                    }
+                    else{
+                        printf("Informe o numero do cartao: ");
+                        scanf("%ld",&dadoCard.cartao.numero);
+
+                        printf("Informe o dia de vencimento: ");
+                        scanf("%d",&dadoCard.cartao.dia);
+
+                        printf("Informe o mes de vencimento: ");
+                        scanf("%d",&dadoCard.cartao.mes);
+
+                        printf("Informe o ano de vencimento: ");
+                        scanf("%d",&dadoCard.cartao.ano);
+
+                        inserirCartao(&L,&C,dadoCard,dadoUser);
+                        printf("Cartao cadastrado!");
+                    }
+                }
+                else{
+                    printf("Usuario nao cadastrado!");
+                }
+
+
+    		}break;
+
+           case 5:
+            {
+                printf("Digite o CPF do usuario que deseja: ");
+                scanf(" %ld",&dadoUser.usuario.cpf);
+                int pos=buscarUsuario(L,dadoUser.usuario.cpf);
+                exibirUsuarioUnico(L,pos);
+            }break;
+
+           case 6:
+            {
+                printf("Digite o numero do cartao da compra: ");
+                scanf(" %ld",&dadoCard.cartao.numero);
+                int endereco=buscarCartao(C,dadoCard.cartao.numero);
+
                 printf("Informe o nome do produto: ");
                 scanf(" %[^\n]", P.nomeProduto);
                 printf("Informe o preco do produto: ");
@@ -23,42 +126,34 @@ int main(){
                 scanf("%d", &P.quantidade);
                 printf("Informe o codigo da compra: ");
                 scanf("%d", &P.codigo);
-
                 raiz=inserir(raiz, P);
-                break;
-            }
 
-            case 2: {
-                imprimir(raiz);
-                printf("\n");
-                break;
-            }
+                juntarArvoreTabela(&C,endereco,*raiz);
+            }break;
 
-            case 3: {
-                printf("Informe o codigo da compra: ");
-                scanf("%d", &P.codigo);
-                No* resultado = busca(raiz, P);
+           case 7:
+            {
+                printf("Digite o numero do cartao: ");
+                scanf(" %ld",&dadoCard.cartao.numero);
+                int endereco=buscarCartao(C,dadoCard.cartao.numero);
+                ExibirCartaoUnico(C,endereco);
 
-                if (resultado != NULL)
-                    imprimirUnicaCompra(resultado);
+            }break;
 
-                else
-                    printf("Compra não encontrado!\n");
-                break;
-            }
+    		case 0:
+            {
+    		     printf("ENCERRANDO PROGRAMA");
+    		     return 0;
+    		}break;
 
-            case 0: {
-                printf("Encerrando o programa...\n");
-                break;
-            }
+    		// Outra opï¿½ï¿½o nao oferecida
+    		default:
+    			puts("OPCAO INCORRETA,TENTAR NOVAMENTE.");break;
 
-            default:
-                puts("OPCAO INCORRETA,TENTAR NOVAMENTE.");
-                break;
         }
-        getchar();
-        getchar();
-    } while (op != 0);
+	getch();
+    }while(op!=0);
 
-    return 0;
+  system("PAUSE");
+  return 0;
 }
