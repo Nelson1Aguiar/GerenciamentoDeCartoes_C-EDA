@@ -13,29 +13,24 @@ TlistaCardCompra criarCartao(){
     TlistaCardCompra *C=malloc(sizeof(TlistaCardCompra));
     C->elemento=malloc(sizeof(Telemento)*MAX);
     memset(C->elemento, 0, (sizeof(elemento)));
-    for(int i=0;i<MAX;i++){
-        C->elemento[i].cartao.numero=0;
-        C->elemento[i].cartao.produto=NULL;
-    }
 	C->n = 0;
     C->m=MAX;
     return *C;
 }
 
 void redimensionarUsuario(TlistaCardCompra *C,TlistaUsuario* L,int tam_novo){
-    Telemento *nova,*antigaCard,*antigaUser;
+    Telemento *antigaCard,*antigaUser;
     int tam_antigo;
 
-    nova=malloc(sizeof(Telemento)*tam_novo);
-    memset(nova, 0, (sizeof(nova)));
-    for(int i=0;i<tam_antigo;i++){
-        nova[i].usuario.nome==NULL;
-    }
+    TlistaUsuario *nova=malloc(sizeof(TlistaUsuario));
+    nova->elemento=malloc(sizeof(Telemento)*tam_novo);
+    memset(nova->elemento, 0, (sizeof(elemento)));
+
     antigaUser=L->elemento;
     antigaCard=C->elemento;
 
     tam_antigo=L->m;
-    L->elemento=nova;
+    L->elemento=nova->elemento;
     L->m=tam_novo;
     L->n=0;
 
@@ -54,21 +49,20 @@ void redimensionarUsuario(TlistaCardCompra *C,TlistaUsuario* L,int tam_novo){
     free(antigaCard);
 }
 
-void redimensionarCartao(TlistaUsuario *L,TlistaCardCompra *C,int tam_novo){
-    Telemento *nova,*antigaCartao,*antigaUser;
+void redimensionarCartao(TlistaUsuario *L,TlistaCardCompra*C,int tam_novo){
+    Telemento *antigaCartao,*antigaUser;
     int tam_antigo;
-    nova=malloc(sizeof(Telemento)*tam_novo);
-    memset(nova, 0, (sizeof(nova)));
-    for(int i=0;i<tam_novo;i++){
-        nova[i].cartao.numero=0;
-        nova[i].cartao.produto=NULL;
-    }
+
+    TlistaCardCompra *nova=malloc(sizeof(TlistaCardCompra));
+    nova->elemento=malloc(sizeof(Telemento)*tam_novo);
+    memset(nova->elemento, 0, (sizeof(elemento)));
 
     antigaCartao=C->elemento;
     antigaUser=L->elemento;
 
     tam_antigo=C->m;
-    C->elemento=nova;
+    C->elemento=nova->elemento;
+
     C->m=tam_novo;
     C->n=0;
 
@@ -100,7 +94,7 @@ void exibirUsuario(TlistaUsuario L){
 	int i;
     if(tamanhoUsuario(L)!=0)
         for (i=0; i<L.m; i++){
-            if(L.elemento[i].usuario.cpf!=0 && L.elemento[i].usuario.qtdCartoes!=0){
+            if(L.elemento[i].usuario.cpf!=0){
                 printf("indice: %d\n", i);
                 printf("Nome: %s\n", L.elemento[i].usuario.nome);
                 printf("Endereco: %s\n", L.elemento[i].usuario.endereco);
@@ -155,7 +149,6 @@ int inserirUsuario(TlistaUsuario *L,TlistaCardCompra *C,Telemento dado,Telemento
     int endereco = hashing(dado.usuario.cpf,L->m);
     while(L->elemento[endereco].usuario.cpf!=0){
         if(dado.usuario.cpf==L->elemento[endereco].usuario.cpf){
-            printf("User ja cadastrado!");
             return 0;
         }
         endereco=hashing(endereco+1,L->m);
@@ -177,7 +170,8 @@ int inserirCartao(TlistaUsuario *L,TlistaCardCompra *C, Telemento dado,Telemento
 
     while(C->elemento[endereco].cartao.numero!=0){
         if(dado.cartao.numero==C->elemento[endereco].cartao.numero){
-            printf("Cartao ja cadastrado!");
+            int pos=buscarUsuario(*L,dadoUser.usuario.cpf);
+            atrelarCartaoUsuario(L,pos,dado);
             return 0;
         }
         endereco=hashing(endereco+1,C->m);
@@ -398,10 +392,6 @@ void imprimir(No* no) {
     imprimir(no->direita);
 }
 
-void imprimirUnicaCompra(No* no){
-    printf("COMPRA DE CODIGO %d -----Produto: %s || Preco: %.2f || Quantidade: %d || Valor total: %.2f reais \n\n",
-           no->compras.codigo,no->compras.nomeProduto,no->compras.preco,no->compras.quantidade,no->compras.preco * no->compras.quantidade);
-}
 void inserirCompras(TlistaCardCompra *C,Telemento dado){
     int pos=buscarCartao(*C,dado.cartao.numero);
     C->elemento[pos].cartao.produto=dado.cartao.produto;
