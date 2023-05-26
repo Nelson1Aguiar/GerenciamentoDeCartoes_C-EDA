@@ -1,18 +1,273 @@
 #include "lib.h"
 
-// FunÁ„o para obter a altura de um nÛ
+TlistaUsuario criarUsuario(){
+    TlistaUsuario *L=malloc(sizeof(TlistaUsuario));
+    L->elemento=malloc(sizeof(Telemento)*MAX);
+    memset(L->elemento, 0, (sizeof(elemento)));
+	L->n = 0;
+    L->m=MAX;
+    return *L;
+}
+
+TlistaCardCompra criarCartao(){
+    TlistaCardCompra *C=malloc(sizeof(TlistaCardCompra));
+    C->elemento=malloc(sizeof(Telemento)*MAX);
+    memset(C->elemento, 0, (sizeof(elemento)));
+    for(int i=0;i<MAX;i++){
+        C->elemento[i].cartao.numero=0;
+    }
+	C->n = 0;
+    C->m=MAX;
+    for(int i=0;i<C->m;i++){
+        C->elemento[i].cartao.numero=0;
+    }
+    return *C;
+}
+
+void redimensionarUsuario(TlistaCardCompra *C,TlistaUsuario *L,int tam_novo){
+    Telemento *nova,*antigaUser,*antigaCard;
+    int tam_antigo;
+    nova=malloc(sizeof(Telemento)*tam_novo);
+    memset(nova, 0, (sizeof(nova)));
+
+    antigaUser=L->elemento;
+    antigaCard=C->elemento;
+
+    tam_antigo=L->m;
+    L->elemento=nova;
+    L->m=tam_novo;
+    L->n=0;
+
+    for(int i=0;i<tam_antigo;i++){
+        if(antigaUser[i].usuario.cpf!=0){
+            for(int j=0;j<tam_antigo;j++){
+                for(int k=0;k<10;k++){
+                    if(antigaCard[i].cartao.numero==antigaUser[j].usuario.numeroCartao[k]){
+                        inserirUsuario(L,C,antigaUser[j],antigaCard[i]);
+                    }
+                }
+            }
+        }
+    }
+    free(antigaUser);
+    free(antigaCard);
+}
+
+void redimensionarCartao(TlistaUsuario *L,TlistaCardCompra *C,int tam_novo){
+    Telemento *nova,*antigaCartao,*antigaUser;
+    int tam_antigo;
+    nova=malloc(sizeof(Telemento)*tam_novo);
+    memset(nova, 0, (sizeof(nova)));
+
+    antigaCartao=C->elemento;
+    antigaUser=L->elemento;
+
+    tam_antigo=C->m;
+    C->elemento=nova;
+    C->m=tam_novo;
+    C->n=0;
+
+    for(int i=0;i<tam_antigo;i++){
+        if(antigaCartao[i].cartao.numero!=0){
+            for(int j=0;j<tam_antigo;j++){
+                for(int k=0;k<10;k++){
+                    if(antigaCartao[i].cartao.numero==antigaUser[j].usuario.numeroCartao[k]){
+                    inserirCartao(L,C,antigaCartao[i],antigaUser[j]);
+                    }
+                }
+            }
+        }
+    }
+    free(antigaUser);
+    free(antigaCartao);
+}
+
+int tamanhoUsuario(TlistaUsuario L){
+	return L.n;
+}
+
+int tamanhoCartao(TlistaCardCompra C){
+	return C.n;
+}
+
+void exibirUsuario(TlistaUsuario L){
+	int i;
+    if(tamanhoUsuario(L)!=0)
+        for (i=0; i<L.m; i++){
+            if(L.elemento[i].usuario.cpf!=NULL){
+                printf("indice: %d\n", i);
+                printf("Nome: %s\n", L.elemento[i].usuario.nome);
+                printf("Endereco: %s\n", L.elemento[i].usuario.endereco);
+                printf("CPF: %ld \n",L.elemento[i].usuario.cpf);
+                printf("Numero cartao ou cartoes: ");
+                for(int j=0;j<10;j++){
+                    if(L.elemento[i].usuario.numeroCartao[j]!=0){
+                        printf(" %ld || ",L.elemento[i].usuario.numeroCartao[j]);
+                    }
+                }
+                printf("\n\n");
+            }
+        }
+    else
+        puts("NAO EXISTE NENHUM USU√ÅRIO NO MOMENTO");
+}
+
+void exibirCartoes(TlistaCardCompra C){
+    int i;
+    if(tamanhoCartao(C)!=0)
+        for(i=0;i<C.m;i++){
+        if(C.elemento[i].cartao.numero!=0){
+            printf("Indice: %d\n",i);
+            printf("Numero: %ld\n",C.elemento[i].cartao.numero);
+            printf("Nome do titular: %s\n",C.elemento[i].cartao.nome);
+            printf("Validade: %d/%d/%d\n\n",C.elemento[i].cartao.dia,C.elemento[i].cartao.mes,C.elemento[i].cartao.ano);
+            if(C.elemento[i].cartao.produto.altura==0){
+                printf("Nenhuma compra realizada!\n");
+                printf("_________________________________________________________________________\n");
+            }
+            else{
+                printf("-------COMPRAS DO CARTAO-------\n");
+                imprimir(&C.elemento[i].cartao.produto);
+                printf("_________________________________________________________________________\n");
+            }
+        }
+    }
+    else
+        printf("Nenhum cartao cadastrado! Faca o cadastro de usuario primeiro");
+}
+
+int hashing(long chave, int tam){
+	return chave % tam;
+}
+
+int inserirUsuario(TlistaUsuario *L,TlistaCardCompra *C,Telemento dado,Telemento dadoCard){
+    float carg=L->n/L->m;
+    if(carg>=fator_carga){
+        redimensionarUsuario(C,L,L->m * 2);
+    }
+    for(int i=0;i<L->m;i++){
+        if(dado.usuario.cpf==L->elemento[i].usuario.cpf){
+            printf("User ja cadastrado!");
+            return 0;
+        }
+    }
+    int endereco = hashing(dado.usuario.cpf,L->m);
+    while(L->elemento[endereco].usuario.cpf!=0){
+        endereco=hashing(endereco+1,L->m);
+    }
+    strcpy(L->elemento[endereco].usuario.nome,dado.usuario.nome);
+    L->elemento[endereco].usuario.cpf = dado.usuario.cpf;
+    strcpy(L->elemento[endereco].usuario.endereco,dado.usuario.endereco);
+    L->n=L->n+1;
+    inserirCartao(L,C,dadoCard,dado);
+	return 1;
+}
+
+int inserirCartao(TlistaUsuario *L,TlistaCardCompra *C, Telemento dado,Telemento dadoUser){
+    float carg=C->n/C->m;
+    if(carg>=0.60){
+        redimensionarCartao(L,C,C->m * 2);
+    }
+    for(int i=0;i<C->m;i++){
+        if(dado.cartao.numero==C->elemento[i].cartao.numero){
+            printf("Cartao ja cadastrado!");
+            return 0;
+        }
+    }
+    int endereco = hashing(dado.cartao.numero,C->m);
+
+    while(C->elemento[endereco].cartao.numero!=0){
+        endereco=hashing(endereco+1,C->m);
+    }
+
+    C->elemento[endereco].cartao.numero = dado.cartao.numero;
+    strcpy(C->elemento[endereco].cartao.nome,dadoUser.usuario.nome);
+    C->elemento[endereco].cartao.dia=dado.cartao.dia;
+    C->elemento[endereco].cartao.mes=dado.cartao.mes;
+    C->elemento[endereco].cartao.ano=dado.cartao.ano;
+    C->n=C->n+1;
+    int pos=buscarUsuario(*L,dadoUser.usuario.cpf);
+    atrelarCartaoUsuario(L,pos,dado);
+	return C->elemento[endereco].cartao.numero;
+}
+
+int buscarUsuario(TlistaUsuario L,long chave){
+    int endereco=hashing(chave,L.m);
+     while(L.elemento[endereco].usuario.cpf!=0){
+        if(L.elemento[endereco].usuario.cpf == chave){
+            return endereco;
+        }
+        else{
+            endereco=hashing(endereco+1,L.m);
+        }
+    }
+}
+void atrelarCartaoUsuario(TlistaUsuario *L,int pos,Telemento dado){
+    for(int i=0;i<10;i++){
+       if(L->elemento[pos].usuario.numeroCartao[i]==dado.cartao.numero){
+            return 0;
+       }
+    }
+    L->elemento[pos].usuario.numeroCartao[L->elemento[pos].usuario.qtdCartoes]=dado.cartao.numero;
+    L->elemento[pos].usuario.qtdCartoes+=1;
+}
+void exibirUsuarioUnico(TlistaUsuario L,int pos){
+    printf("indice: %d\n", pos);
+    printf("Nome: %s\n", L.elemento[pos].usuario.nome);
+    printf("Endereco: %s\n", L.elemento[pos].usuario.endereco);
+    printf("CPF: %ld\n",L.elemento[pos].usuario.cpf);
+    printf("Numero cartao ou cartoes: ");
+    for(int j=0;j<10;j++){
+        if(L.elemento[pos].usuario.numeroCartao[j]!=0){
+            printf(" %ld || ",L.elemento[pos].usuario.numeroCartao[j]);
+        }
+    }
+}
+
+int buscarCartao(TlistaCardCompra C,long chave){
+    int endereco=hashing(chave,C.m);
+     while(C.elemento[endereco].cartao.numero!=0){
+        if(C.elemento[endereco].cartao.numero == chave){
+            return endereco;
+        }
+        else{
+            endereco=hashing(endereco+1,C.m);
+        }
+    }
+}
+
+void ExibirCartaoUnico(TlistaCardCompra C,int endereco){
+    if(C.elemento[endereco].cartao.numero==0){
+        printf("Cart√£o n√£o cadastrado!");
+    }
+    printf("Indice: %d\n",endereco);
+    printf("Numero: %ld\n",C.elemento[endereco].cartao.numero);
+    printf("Nome do titular: %s\n",C.elemento[endereco].cartao.nome);
+    printf("Validade: %d/%d/%d\n\n",C.elemento[endereco].cartao.dia,C.elemento[endereco].cartao.mes,C.elemento[endereco].cartao.ano);
+    if(C.elemento[endereco].cartao.produto.altura==0){
+        printf("Nenhuma compra realizada!\n");
+        printf("_________________________________________________________________________\n");
+    }
+    else{
+        printf("-------COMPRAS DO CARTAO-------\n");
+        imprimir(&C.elemento[endereco].cartao.produto);
+        printf("_________________________________________________________________________\n");
+        }
+}
+
+// Fun√ß√£o para obter a altura de um n√≥
 int getAltura(No* no) {
     if (no == NULL)
         return 0;
     return no->altura;
 }
 
-// FunÁ„o para obter o m·ximo entre dois n˙meros
+// Fun√ß√£o para obter o m√°ximo entre dois n√∫meros
 int max(int a, int b) {
     return (a > b) ? a : b;
 }
 
-// FunÁ„o para criar um novo nÛ com uma chave dada
+// Fun√ß√£o para criar um novo n√≥ com uma chave dada
 No* novoNo(Produto P) {
     No* no = (No*)malloc(sizeof(No));
     no->compras = P;
@@ -22,12 +277,12 @@ No* novoNo(Produto P) {
     return no;
 }
 
-// FunÁ„o para fazer uma rotaÁ„o simples ‡ direita
+// Fun√ß√£o para fazer uma rota√ß√£o simples √† direita
 No* rotacaoDireita(No* y) {
     No* x = y->esquerda;
     No* T2 = x->direita;
 
-    // Realiza a rotaÁ„o
+    // Realiza a rota√ß√£o
     x->direita = y;
     y->esquerda = T2;
 
@@ -38,12 +293,12 @@ No* rotacaoDireita(No* y) {
     return x;
 }
 
-// FunÁ„o para fazer uma rotaÁ„o simples ‡ esquerda
+// Fun√ß√£o para fazer uma rota√ß√£o simples √† esquerda
 No* rotacaoEsquerda(No* x) {
     No* y = x->direita;
     No* T2 = y->esquerda;
 
-    // Realiza a rotaÁ„o
+    // Realiza a rota√ß√£o
     y->esquerda = x;
     x->direita = T2;
 
@@ -54,16 +309,16 @@ No* rotacaoEsquerda(No* x) {
     return y;
 }
 
-// FunÁ„o para obter o fator de balanceamento de um nÛ
+// Fun√ß√£o para obter o fator de balanceamento de um n√≥
 int getBalanceamento(No* no) {
     if (no == NULL)
         return 0;
     return getAltura(no->esquerda) - getAltura(no->direita);
 }
 
-// FunÁ„o para inserir uma chave em uma ·rvore AVL
+// Fun√ß√£o para inserir uma chave em uma √°rvore AVL
 No* inserir(No* no, Produto P) {
-    // Realiza a inserÁ„o normal de uma ·rvore bin·ria de pesquisa
+    // Realiza a inser√ß√£o normal de uma √°rvore bin√°ria de pesquisa
     if (no == NULL)
         return novoNo(P);
 
@@ -73,16 +328,16 @@ No* inserir(No* no, Produto P) {
     else if (P.codigo > no->compras.codigo)
         no->direita = inserir(no->direita, P);
 
-    else // Chaves iguais n„o s„o permitidas
+    else // Chaves iguais n√£o s√£o permitidas
         printf("Codigo ja cadastrado em outra compra!");
         return no;
-    // Atualiza a altura do nÛ pai
+    // Atualiza a altura do n√≥ pai
     no->altura = 1 + max(getAltura(no->esquerda), getAltura(no->direita));
 
-    // ObtÈm o fator de balanceamento do nÛ pai
+    // Obt√©m o fator de balanceamento do n√≥ pai
     int balanceamento = getBalanceamento(no);
 
-    // Caso de desbalanceamento, existem 4 casos possÌveis
+    // Caso de desbalanceamento, existem 4 casos poss√≠veis
 
     // Caso esquerda-esquerda
     if (balanceamento > 1 && P.codigo < no->esquerda->compras.codigo)
@@ -103,25 +358,25 @@ No* inserir(No* no, Produto P) {
         no->direita = rotacaoDireita(no->direita);
         return rotacaoEsquerda(no);
     }
-    // ¡rvore balanceada, retorna o nÛ sem alteraÁıes
+    // √Årvore balanceada, retorna o n√≥ sem altera√ß√µes
     return no;
 }
 
-// FunÁ„o para buscar uma chave em uma ·rvore AVL
+// Fun√ß√£o para buscar uma chave em uma √°rvore AVL
 No* busca(No* raiz, Produto P) {
-    // Caso a ·rvore esteja vazia ou a chave seja encontrada
+    // Caso a √°rvore esteja vazia ou a chave seja encontrada
     if (raiz == NULL || raiz->compras.codigo == P.codigo)
         return raiz;
 
-    // Se a chave for menor que a chave do nÛ atual, busca na sub·rvore esquerda
+    // Se a chave for menor que a chave do n√≥ atual, busca na sub√°rvore esquerda
     if (P.codigo < raiz->compras.codigo)
         return busca(raiz->esquerda, P);
 
-    // Se a chave for maior que a chave do nÛ atual, busca na sub·rvore direita
+    // Se a chave for maior que a chave do n√≥ atual, busca na sub√°rvore direita
     return busca(raiz->direita, P);
 }
 
-// FunÁ„o para imprimir a ·rvore em ordem (in-order traversal)
+// Fun√ß√£o para imprimir a √°rvore em ordem (in-order traversal)
 void imprimir(No* no) {
     if (no == NULL)
         return;
@@ -136,3 +391,11 @@ void imprimirUnicaCompra(No* no){
     printf("COMPRA DE CODIGO %d -----Produto: %s || Preco: %.2f || Quantidade: %d || Valor total: %.2f reais \n\n",
            no->compras.codigo,no->compras.nomeProduto,no->compras.preco,no->compras.quantidade,no->compras.preco * no->compras.quantidade);
 }
+
+void juntarArvoreTabela(TlistaCardCompra *C,int endereco,No raiz){
+    C->elemento[endereco].cartao.produto=raiz;
+}
+
+
+
+
