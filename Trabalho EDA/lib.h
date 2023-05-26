@@ -4,7 +4,6 @@
 #include<string.h>
 
 #define MAX 11
-#define fator_carga 0.8
 
 typedef struct produto{
     char nomeProduto[50];
@@ -67,8 +66,8 @@ int inserirCartao(TlistaUsuario *L,TlistaCardCompra *C, Telemento dado,Telemento
 int buscarUsuario(TlistaUsuario L,long long chave);
 int atrelarCartaoUsuario(TlistaUsuario *L,int pos,Telemento dado);
 void exibirCartoes(TlistaCardCompra C);
-void exibirUsuarioUnico(TlistaUsuario L,int pos);
-void ExibirCartaoUnico(TlistaCardCompra C,int endereco);
+int exibirUsuarioUnico(TlistaUsuario L,int pos);
+int ExibirCartaoUnico(TlistaCardCompra C,int endereco);
 int buscarCartao(TlistaCardCompra C,long long chave);
 int getAltura(No* no);
 int max(int a, int b);
@@ -78,4 +77,5 @@ No* rotacaoEsquerda(No* x);
 int getBalanceamento(No* no);
 No* inserir(No* no, Produto P);
 void imprimir(No* no);
+void inserirCompras(TlistaCardCompra *C,Telemento dado);
 
