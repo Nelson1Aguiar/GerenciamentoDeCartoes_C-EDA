@@ -19,18 +19,18 @@ TlistaCardCompra criarCartao(){
     }
 	C->n = 0;
     C->m=MAX;
-    for(int i=0;i<C->m;i++){
-        C->elemento[i].cartao.numero=0;
-    }
     return *C;
 }
 
-void redimensionarUsuario(TlistaCardCompra *C,TlistaUsuario *L,int tam_novo){
-    Telemento *nova,*antigaUser,*antigaCard;
+void redimensionarUsuario(TlistaCardCompra *C,TlistaUsuario* L,int tam_novo){
+    Telemento *nova,*antigaCard,*antigaUser;
     int tam_antigo;
+
     nova=malloc(sizeof(Telemento)*tam_novo);
     memset(nova, 0, (sizeof(nova)));
-
+    for(int i=0;i<tam_antigo;i++){
+        nova[i].usuario.nome==NULL;
+    }
     antigaUser=L->elemento;
     antigaCard=C->elemento;
 
@@ -39,12 +39,12 @@ void redimensionarUsuario(TlistaCardCompra *C,TlistaUsuario *L,int tam_novo){
     L->m=tam_novo;
     L->n=0;
 
-    for(int i=0;i<tam_antigo;i++){
+     for(int i=0;i<tam_antigo;i++){
         if(antigaUser[i].usuario.cpf!=0){
             for(int j=0;j<tam_antigo;j++){
                 for(int k=0;k<10;k++){
                     if(antigaCard[i].cartao.numero==antigaUser[j].usuario.numeroCartao[k]){
-                        inserirUsuario(L,C,antigaUser[j],antigaCard[i]);
+                    inserirUsuario(L,C,antigaUser[j],antigaCard[i]);
                     }
                 }
             }
@@ -59,6 +59,10 @@ void redimensionarCartao(TlistaUsuario *L,TlistaCardCompra *C,int tam_novo){
     int tam_antigo;
     nova=malloc(sizeof(Telemento)*tam_novo);
     memset(nova, 0, (sizeof(nova)));
+    for(int i=0;i<tam_novo;i++){
+        nova[i].cartao.numero=0;
+        nova[i].cartao.produto=NULL;
+    }
 
     antigaCartao=C->elemento;
     antigaUser=L->elemento;
@@ -74,6 +78,7 @@ void redimensionarCartao(TlistaUsuario *L,TlistaCardCompra *C,int tam_novo){
                 for(int k=0;k<10;k++){
                     if(antigaCartao[i].cartao.numero==antigaUser[j].usuario.numeroCartao[k]){
                     inserirCartao(L,C,antigaCartao[i],antigaUser[j]);
+                    inserirCompras(C,antigaCartao[i]);
                     }
                 }
             }
@@ -95,7 +100,7 @@ void exibirUsuario(TlistaUsuario L){
 	int i;
     if(tamanhoUsuario(L)!=0)
         for (i=0; i<L.m; i++){
-            if(L.elemento[i].usuario.cpf!=0){
+            if(L.elemento[i].usuario.cpf!=0 && L.elemento[i].usuario.qtdCartoes!=0){
                 printf("indice: %d\n", i);
                 printf("Nome: %s\n", L.elemento[i].usuario.nome);
                 printf("Endereco: %s\n", L.elemento[i].usuario.endereco);
@@ -117,12 +122,12 @@ void exibirCartoes(TlistaCardCompra C){
     int i;
     if(tamanhoCartao(C)!=0)
         for(i=0;i<C.m;i++){
-        if(C.elemento[i].cartao.numero!=0){
+        if(C.elemento[i].cartao.numero!=0 && C.elemento[i].cartao.ano!=0){
             printf("Indice: %d\n",i);
             printf("Numero: %lli\n",C.elemento[i].cartao.numero);
             printf("Nome do titular: %s\n",C.elemento[i].cartao.nome);
             printf("Validade: %d/%d/%d\n\n",C.elemento[i].cartao.dia,C.elemento[i].cartao.mes,C.elemento[i].cartao.ano);
-            if(C.elemento[i].cartao.produto->altura==0){
+            if(C.elemento[i].cartao.produto==NULL){
                 printf("Nenhuma compra realizada!\n");
                 printf("_________________________________________________________________________\n");
             }
@@ -143,17 +148,16 @@ int hashing(long long chave, int tam){
 
 int inserirUsuario(TlistaUsuario *L,TlistaCardCompra *C,Telemento dado,Telemento dadoCard){
     float carg=L->n/L->m;
-    if(carg>=fator_carga){
+    if(carg>=0.80){
         redimensionarUsuario(C,L,L->m * 2);
     }
-    for(int i=0;i<L->m;i++){
-        if(dado.usuario.cpf==L->elemento[i].usuario.cpf){
+
+    int endereco = hashing(dado.usuario.cpf,L->m);
+    while(L->elemento[endereco].usuario.cpf!=0){
+        if(dado.usuario.cpf==L->elemento[endereco].usuario.cpf){
             printf("User ja cadastrado!");
             return 0;
         }
-    }
-    int endereco = hashing(dado.usuario.cpf,L->m);
-    while(L->elemento[endereco].usuario.cpf!=0){
         endereco=hashing(endereco+1,L->m);
     }
     strcpy(L->elemento[endereco].usuario.nome,dado.usuario.nome);
@@ -169,15 +173,13 @@ int inserirCartao(TlistaUsuario *L,TlistaCardCompra *C, Telemento dado,Telemento
     if(carg>=0.60){
         redimensionarCartao(L,C,C->m * 2);
     }
-    for(int i=0;i<C->m;i++){
-        if(dado.cartao.numero==C->elemento[i].cartao.numero){
-            printf("Cartao ja cadastrado!");
-            return 0;
-        }
-    }
     int endereco = hashing(dado.cartao.numero,C->m);
 
     while(C->elemento[endereco].cartao.numero!=0){
+        if(dado.cartao.numero==C->elemento[endereco].cartao.numero){
+            printf("Cartao ja cadastrado!");
+            return 0;
+        }
         endereco=hashing(endereco+1,C->m);
     }
 
@@ -213,7 +215,11 @@ int atrelarCartaoUsuario(TlistaUsuario *L,int pos,Telemento dado){
     L->elemento[pos].usuario.qtdCartoes+=1;
     return 1;
 }
-void exibirUsuarioUnico(TlistaUsuario L,int pos){
+int exibirUsuarioUnico(TlistaUsuario L,int pos){
+     if(L.elemento[pos].usuario.cpf==0){
+        printf("Usuario nao cadastrado!");
+        return 0;
+    }
     printf("indice: %d\n", pos);
     printf("Nome: %s\n", L.elemento[pos].usuario.nome);
     printf("Endereco: %s\n", L.elemento[pos].usuario.endereco);
@@ -224,6 +230,7 @@ void exibirUsuarioUnico(TlistaUsuario L,int pos){
             printf(" %lli || ",L.elemento[pos].usuario.numeroCartao[j]);
         }
     }
+    return 1;
 }
 
 int buscarCartao(TlistaCardCompra C,long long chave){
@@ -238,15 +245,16 @@ int buscarCartao(TlistaCardCompra C,long long chave){
     }
 }
 
-void ExibirCartaoUnico(TlistaCardCompra C,int endereco){
+int ExibirCartaoUnico(TlistaCardCompra C,int endereco){
     if(C.elemento[endereco].cartao.numero==0){
-        printf("Cartão não cadastrado!");
+        printf("Cartao nao cadastrado!");
+        return 0;
     }
     printf("Indice: %d\n",endereco);
     printf("Numero: %lli\n",C.elemento[endereco].cartao.numero);
     printf("Nome do titular: %s\n",C.elemento[endereco].cartao.nome);
     printf("Validade: %d/%d/%d\n\n",C.elemento[endereco].cartao.dia,C.elemento[endereco].cartao.mes,C.elemento[endereco].cartao.ano);
-    if(C.elemento[endereco].cartao.produto->altura==0){
+    if(C.elemento[endereco].cartao.produto==NULL){
         printf("Nenhuma compra realizada!\n");
         printf("_________________________________________________________________________\n");
     }
@@ -255,6 +263,7 @@ void ExibirCartaoUnico(TlistaCardCompra C,int endereco){
         imprimir(C.elemento[endereco].cartao.produto);
         printf("_________________________________________________________________________\n");
         }
+        return 1;
 }
 
 // Função para obter a altura de um nó
@@ -393,4 +402,7 @@ void imprimirUnicaCompra(No* no){
     printf("COMPRA DE CODIGO %d -----Produto: %s || Preco: %.2f || Quantidade: %d || Valor total: %.2f reais \n\n",
            no->compras.codigo,no->compras.nomeProduto,no->compras.preco,no->compras.quantidade,no->compras.preco * no->compras.quantidade);
 }
-
+void inserirCompras(TlistaCardCompra *C,Telemento dado){
+    int pos=buscarCartao(*C,dado.cartao.numero);
+    C->elemento[pos].cartao.produto=dado.cartao.produto;
+}
